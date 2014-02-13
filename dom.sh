@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-# Callback functions for scripts to run based on user input
-create_agent() { ./named/bin/agent-zone-create.sh; }
-create_office() { ./named/bin/office-zone-create.sh; }
-update_agent() { ./named/bin/agent-dynamic-updates.sh; }
-update_office() { ./named/bin/office-dynamic-updates.sh; }
+# Add these to a config file eventually
+create_agent() { sudo -u named /named/bin/agent-zone-create.sh; }
+create_office() { sudo -u named /named/bin/office-zone-create.sh; }
+update_agent() { echo 'Command not available'; }
+update_office() { echo 'Command not available'; }
 
-if [ $# -eq 0 ] # No arguments. Do menu of options instead.
+if [ $# -eq 0 ] # No arguments. Do menu of options instead.'
 then
 	menu=(
 		"Create new agent zone."
@@ -17,16 +17,11 @@ then
 		"Quit")	
 	title="Domain Administration"
 	invalid="Invalid. Must be 1-${#menu[@]}"
-	help="
-	Choose \"Create new agent zone\" in order
-	to add an agent website custom domain.
-	To update and existing custom domain
-	choose \"Update agent zone.\" You can
-	do the same with office domains by
-	choosing the corresponding commands.
-	"
+	help="Printing help..."
 	
 	printf "\n\e[1m%s\e[0m\n" "$title" # escape sequences print bold
+	# PS3 is the prompt variable that is used to define the prompt
+	# string displayed by the 'select' command, which creates a menu
 	PS3="   Choose an option: "
 	select opt in "${menu[@]}"; do
 		case "$REPLY" in
@@ -39,21 +34,10 @@ then
 			*) printf "\e[31m%s\e[0m\n" "$invalid" # print in red
 		esac
 	done
-	exit 0
+	exit 0 #Do I need this?
 fi
 
-usage='
-    usage: dom [-c | -u] [-a | -o][-h]
-
-    Create of update a new zone file for a domain name.
-
-	-c	Create a new zone
-	-u	Update a new zone
-	-a	Type is an agent zone
-	-o	Type is an office zone
-	-h	Print this help screen
-'
-
+usage='usage: domain [-c | -u] [-a | -o][-h]'
 errormessage() {
 	echo "$usage"
 	exit 1
@@ -104,3 +88,4 @@ then
 else
 	errormessage
 fi
+
